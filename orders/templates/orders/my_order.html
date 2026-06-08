@@ -1,15 +1,57 @@
 {% extends "base.html" %}
-
+{% block title %}Mi Pedido · Coffee Shop{% endblock %}
 {% block content %}
 
-{{order.user.username}}
-{{order.order_date|date:"d/m/Y"}}
+<div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-display font-bold text-stone-900">Mi pedido</h1>
+        <span class="text-sm text-stone-500">{{ order.order_date|date:"d/m/Y H:i" }}</span>
+    </div>
 
-{% for product_order in order.orderproduct_set.all %}
-    {{product_order.product.name}} 
-    {{product_order.product.price}} 
-{% empty %}
-    No hay productos en esta orden.
-{% endfor %}
+    {% if order.orderproduct_set.all %}
+    <div class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
+        <ul class="divide-y divide-stone-100">
+            {% for line in order.orderproduct_set.all %}
+            <li class="flex items-center gap-4 p-4">
+                <div class="size-16 shrink-0 overflow-hidden rounded-xl bg-stone-100">
+                    {% if line.product.photo %}
+                    <img src="{{ line.product.photo.url }}" alt="{{ line.product.name }}" class="h-full w-full object-cover">
+                    {% endif %}
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-stone-900">{{ line.product.name }}</p>
+                    <p class="text-sm text-stone-500">${{ line.product.price }} c/u · cantidad {{ line.quantity }}</p>
+                </div>
+                <span class="font-semibold text-stone-900">${{ line.subtotal }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="flex items-center justify-between border-t border-stone-200 bg-stone-50 p-4">
+            <span class="text-lg font-display font-semibold">Total</span>
+            <span class="text-2xl font-bold text-stone-900">${{ order.total }}</span>
+        </div>
+    </div>
+
+    <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <a href="{% url 'list_product' %}" class="flex-1 rounded-lg border border-stone-300 px-6 py-3 text-center font-semibold text-stone-700 hover:bg-stone-100 transition">
+            Seguir comprando
+        </a>
+        <form action="{% url 'checkout' %}" method="post" class="flex-1">
+            {% csrf_token %}
+            <button type="submit" class="w-full rounded-lg bg-amber-400 px-6 py-3 font-semibold text-stone-900 hover:bg-amber-300 transition">
+                Confirmar pedido · ${{ order.total }}
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <div class="rounded-2xl border border-dashed border-stone-300 bg-white py-20 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="mx-auto size-16 text-stone-300">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/>
+        </svg>
+        <p class="mt-4 text-stone-500">Tu pedido está vacío.</p>
+        <a href="{% url 'list_product' %}" class="mt-4 inline-block rounded-lg bg-amber-400 px-6 py-3 font-semibold text-stone-900 hover:bg-amber-300 transition">Ver el menú</a>
+    </div>
+    {% endif %}
+</div>
 
 {% endblock content %}

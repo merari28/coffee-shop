@@ -16,18 +16,26 @@ import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-env = environ.Env()
+env = environ.Env(
+    DEBUG=(bool, True),
+    USE_RDS=(bool, False),
+)
+# Read a local .env file if present (never committed; see .env.example).
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$o#uq!ypf8b17h$13s$hvbu5)-t%qv1k2g6ss)bte1-atmna5o'
+SECRET_KEY = env(
+    'SECRET_KEY',
+    default='django-insecure-$o#uq!ypf8b17h$13s$hvbu5)-t%qv1k2g6ss)bte1-atmna5o',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
 
 # Application definition
@@ -79,17 +87,32 @@ WSGI_APPLICATION = 'coffee_shop.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+#
+# By default the project runs against a self-contained local SQLite database so
+# it can be set up and demoed without touching any remote/production server.
+# Set USE_RDS=true (and provide the DB_* env vars) to point at the managed
+# PostgreSQL instance instead. The remote credentials are NOT used unless you
+# explicitly opt in, and they should live in environment variables / .env, never
+# hard-coded (see .env.example).
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'db_username',
-        'PASSWORD': 'dbpassword32',
-        'HOST': 'db-curso-django.c540keio40pu.us-east-2.rds.amazonaws.com',
-        'PORT': '5432',
+if env('USE_RDS'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='postgres'),
+            'USER': env('DB_USER', default='db_username'),
+            'PASSWORD': env('DB_PASSWORD', default=''),
+            'HOST': env('DB_HOST', default=''),
+            'PORT': env('DB_PORT', default='5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -127,6 +150,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+# Media files (user/seed uploaded images: product photos, profile avatars).
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -147,3 +175,25 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+
+# Email
+# https://docs.djangoproject.com/en/6.0/topics/email/
+#
+# Defaults to the console backend so welcome / order-confirmation emails are
+# fully exercised without needing real SMTP credentials. Set EMAIL_BACKEND to
+# 'django.core.mail.backends.smtp.EmailBackend' and provide the EMAIL_* vars to
+# send real mail.
+EMAIL_BACKEND = env(
+    'EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend',
+)
+EMAIL_HOST = env('EMAIL_HOST', default='localhost')
+EMAIL_PORT = env.int('EMAIL_PORT', default=25)
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=False)
+DEFAULT_FROM_EMAIL = env(
+    'DEFAULT_FROM_EMAIL',
+    default='Coffee Shop <no-reply@coffeeshop.demo>',
+)

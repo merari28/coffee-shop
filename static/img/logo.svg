@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Coffee Shop">
+  <defs>
+    <linearGradient id="cupGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b07a4e"/>
+      <stop offset="1" stop-color="#7b4a26"/>
+    </linearGradient>
+  </defs>
+  <!-- rounded badge -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#3b2417"/>
+  <!-- steam -->
+  <g fill="none" stroke="#e9d9c7" stroke-width="2.4" stroke-linecap="round" opacity="0.9">
+    <path d="M26 14c-2 2.4-2 4.8 0 7.2"/>
+    <path d="M32 12c-2 2.6-2 5.2 0 7.8"/>
+    <path d="M38 14c-2 2.4-2 4.8 0 7.2"/>
+  </g>
+  <!-- saucer -->
+  <rect x="14" y="50" width="36" height="4" rx="2" fill="#e9d9c7"/>
+  <!-- cup body -->
+  <path d="M16 26h26v9a13 13 0 0 1-13 13h0a13 13 0 0 1-13-13z" fill="url(#cupGrad)"/>
+  <!-- coffee surface -->
+  <ellipse cx="29" cy="27" rx="13" ry="3.2" fill="#2c1810"/>
+  <!-- handle -->
+  <path d="M42 28h4a6 6 0 0 1 0 12h-3" fill="none" stroke="url(#cupGrad)" stroke-width="4" stroke-linecap="round"/>
+</svg>
