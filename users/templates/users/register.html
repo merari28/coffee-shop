@@ -12,14 +12,14 @@
             {% csrf_token %}
             {{ form|crispy }}
             <button type="submit"
-                class="w-full rounded-lg bg-amber-400 px-6 py-3 font-semibold text-stone-900 hover:bg-amber-300 transition">
+                class="w-full rounded-lg bg-[#6f4e37] px-6 py-3 font-semibold text-white hover:bg-[#5a3f2c] transition">
                 Crear cuenta
             </button>
         </form>
     </div>
     <p class="mt-4 text-center text-sm text-stone-500">
         ¿Ya tenés cuenta?
-        <a href="{% url 'login' %}" class="font-semibold text-amber-700 hover:text-amber-800">Iniciar sesión</a>
+        <a href="{% url 'login' %}" class="font-semibold text-[#6f4e37] hover:text-[#5a3f2c]">Iniciar sesión</a>
     </p>
 </div>
 

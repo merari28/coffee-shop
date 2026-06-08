@@ -9,7 +9,7 @@
         <form action="{% url 'add_to_order' %}" method="post" class="space-y-4">
             {% csrf_token %}
             {{ form|crispy }}
-            <button type="submit" class="w-full rounded-lg bg-amber-400 px-6 py-3 font-semibold text-stone-900 hover:bg-amber-300 transition">
+            <button type="submit" class="w-full rounded-lg bg-[#6f4e37] px-6 py-3 font-semibold text-white hover:bg-[#5a3f2c] transition">
                 Agregar al pedido
             </button>
         </form>
